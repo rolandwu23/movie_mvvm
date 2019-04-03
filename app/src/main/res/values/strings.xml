@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Movie</string>
+    <string name="errorString">Error</string>
+    <string name="network_error">Network Error</string>
+</resources>
