@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 
 
@@ -46,8 +48,10 @@ public class MainActivity extends AppCompatActivity{
 
     MainViewModel mainViewModel;
 
+    @BindView(R.id.shimmer_view_container)
     ShimmerFrameLayout shimmerFrameLayout;
 
+    @BindView(R.id.activity_main_recycler_view)
     RecyclerView recyclerView;
 
     MoviePageListAdapter pageListAdapter;
@@ -61,12 +65,10 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         setToolbar();
 
-        shimmerFrameLayout = (ShimmerFrameLayout) findViewById(R.id.shimmer_view_container);
-
         ((MyApplication) getApplication()).getAppComponent().doInjection(this);
+        ButterKnife.bind(this);
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
-        recyclerView = (RecyclerView) findViewById(R.id.activity_main_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
 
         mainViewModel = ViewModelProviders.of(this,viewModelFactory).get(MainViewModel.class);
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity{
         mainViewModel.getMostLoadStatus().observe(this, status -> {
 
             if(Objects.requireNonNull(status).equals(Status.INITIAL)){
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
             } else if (status.equals(Status.SUCCESS)) {
                shimmerFrameLayout.stopShimmer();
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity{
         mainViewModel.getHighestLoadStatus().observe(this, status -> {
 
             if(Objects.requireNonNull(status).equals(Status.INITIAL)){
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
             } else if (status.equals(Status.SUCCESS)) {
                 shimmerFrameLayout.stopShimmer();
@@ -206,6 +210,7 @@ public class MainActivity extends AppCompatActivity{
         MovieAdapter adapter = new MovieAdapter(this,movies);
         recyclerView.swapAdapter(adapter,true);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -258,4 +263,11 @@ public class MainActivity extends AppCompatActivity{
         super.onDestroy();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(pref.getSelectedOption() == SortType.FAVORITES.getValue()){
+            showFavourties();
+        }
+    }
 }

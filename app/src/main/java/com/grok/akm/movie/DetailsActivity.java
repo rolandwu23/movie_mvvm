@@ -36,6 +36,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     // View name of the header image. Used for activity scene transitions
@@ -50,18 +54,31 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Inject
     FavouritesInteractor favouritesInteractor;
 
+    @BindView(R.id.movie_poster)
     ImageView poster;
+    @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbar;
+    @BindView(R.id.movie_name)
     TextView title;
+    @BindView(R.id.movie_year)
     TextView releaseDate;
+    @BindView(R.id.movie_rating)
     TextView rating;
+    @BindView(R.id.movie_description)
     TextView overview;
+    @BindView(R.id.trailers_label)
     TextView label;
+    @BindView(R.id.trailers)
     LinearLayout trailers;
+    @BindView(R.id.trailers_container)
     HorizontalScrollView horizontalScrollView;
+    @BindView(R.id.reviews_label)
     TextView reviews;
+    @BindView(R.id.reviews)
     LinearLayout reviewsContainer;
+    @BindView(R.id.favorite)
     FloatingActionButton favorite;
+    @BindView(R.id.toolbar)
     @Nullable
     Toolbar toolbar;
 
@@ -77,21 +94,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         ((MyApplication) getApplication()).getAppComponent().doInjection(this);
 
-        poster = (ImageView) findViewById(R.id.movie_poster);
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        title = (TextView) findViewById(R.id.movie_name);
-        releaseDate = (TextView) findViewById(R.id.movie_year);
-        rating = (TextView) findViewById(R.id.movie_rating);
-        overview = (TextView) findViewById(R.id.movie_description);
-        label = (TextView) findViewById(R.id.trailers_label);
-        trailers = (LinearLayout) findViewById(R.id.trailers);
-        horizontalScrollView = (HorizontalScrollView) findViewById(R.id.trailers_container);
-        reviews = (TextView) findViewById(R.id.reviews_label);
-        reviewsContainer = (LinearLayout) findViewById(R.id.reviews);
-        favorite = (FloatingActionButton) findViewById(R.id.favorite);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        favorite.setOnClickListener(v -> {onFavouriteClick();});
+        ButterKnife.bind(this);
 
         ViewCompat.setTransitionName(poster,VIEW_NAME_HEADER_IMAGE);
         ViewCompat.setTransitionName(title,VIEW_NAME_HEADER_TITLE);
@@ -300,7 +303,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         return true;
     }
 
-    @Override
+    @OnClick(R.id.favorite)
     public void onClick(View view) {
         switch (view.getId())
         {
@@ -310,6 +313,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
             case R.id.review_content:
                 onReviewClick((TextView) view);
+                break;
+
+            case R.id.favorite:
+                onFavouriteClick();
                 break;
 
             default:
