@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import com.grok.akm.movie.BuildConfig;
 import com.grok.akm.movie.MyApplication;
+import com.grok.akm.movie.SortType;
 import com.grok.akm.movie.ViewModel.Repository;
 import com.grok.akm.movie.Retrofit.ApiCallInterface;
 import com.grok.akm.movie.Retrofit.RequestInterceptor;

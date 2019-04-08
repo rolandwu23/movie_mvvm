@@ -1,7 +1,7 @@
 package com.grok.akm.movie;
 
 import com.grok.akm.movie.Retrofit.Status;
-import com.grok.akm.movie.pojo.Search;
+import com.grok.akm.movie.pojo.MovieWrapper;
 
 import io.reactivex.annotations.Nullable;
 
@@ -15,12 +15,12 @@ public class ApiResponseMovie {
     public final Status status;
 
     @Nullable
-    public final Search data;
+    public final MovieWrapper data;
 
     @Nullable
     public final Throwable error;
 
-    private ApiResponseMovie(Status status, @Nullable Search data, @Nullable Throwable error) {
+    private ApiResponseMovie(Status status, @Nullable MovieWrapper data, @Nullable Throwable error) {
         this.status = status;
         this.data = data;
         this.error = error;
@@ -30,7 +30,7 @@ public class ApiResponseMovie {
         return new ApiResponseMovie(LOADING, null, null);
     }
 
-    public static ApiResponseMovie success(@io.reactivex.annotations.NonNull Search data) {
+    public static ApiResponseMovie success(@io.reactivex.annotations.NonNull MovieWrapper data) {
         return new ApiResponseMovie(SUCCESS, data, null);
     }
 

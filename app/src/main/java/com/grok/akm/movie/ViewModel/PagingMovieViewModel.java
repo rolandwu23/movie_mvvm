@@ -8,6 +8,8 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 
 import com.grok.akm.movie.Retrofit.Status;
+import com.grok.akm.movie.SortType;
+import com.grok.akm.movie.paging.HighestMovieDataSource;
 import com.grok.akm.movie.paging.MovieDataSource;
 import com.grok.akm.movie.paging.MovieDataSourceFactory;
 import com.grok.akm.movie.pojo.Movie;

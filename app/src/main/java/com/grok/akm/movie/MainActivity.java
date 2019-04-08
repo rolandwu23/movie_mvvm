@@ -1,72 +1,176 @@
 package com.grok.akm.movie;
 
-import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.grok.akm.movie.Retrofit.Status;
+import com.grok.akm.movie.ViewModel.MovieViewModel;
+import com.grok.akm.movie.ViewModel.NewestMovieViewModel;
+import com.grok.akm.movie.ViewModel.PagingHighestMovieViewModel;
 import com.grok.akm.movie.ViewModel.PagingMovieViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
+import com.grok.akm.movie.di.SortPreferences;
+import com.grok.akm.movie.favourites.FavouritesInteractor;
+import com.grok.akm.movie.paging.MovieAdapter;
 import com.grok.akm.movie.paging.MoviePageListAdapter;
+import com.grok.akm.movie.pojo.Movie;
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity {
+import io.reactivex.disposables.Disposable;
+
+public class MainActivity extends AppCompatActivity implements SortingDialogFragment.RadioChecked{
 
     @Inject
     ViewModelFactory viewModelFactory;
 
+    @Inject
+    SortPreferences pref;
+
+    @Inject
+    FavouritesInteractor favouritesInteractor;
+
     PagingMovieViewModel pagingMovieViewModel;
 
-    ProgressDialog progressDialog;
+    PagingHighestMovieViewModel pagingHighestMovieViewModel;
+
+    MovieViewModel movieViewModel;
+
+    NewestMovieViewModel newestMovieViewModel;
+
+    ShimmerFrameLayout shimmerFrameLayout;
+
+    RecyclerView recyclerView;
+
+    MoviePageListAdapter pageListAdapter;
+
+    private Disposable searchViewTextSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        progressDialog = Constant.getProgressDialog(this, "Loading Movies...");
+        setContentView(R.layout.activity_main);
+        setToolbar();
+
+        shimmerFrameLayout = (ShimmerFrameLayout) findViewById(R.id.shimmer_view_container);
 
         ((MyApplication) getApplication()).getAppComponent().doInjection(this);
 
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_main_recycler_view);
+        recyclerView.setLayoutManager(layoutManager);
+
         pagingMovieViewModel = ViewModelProviders.of(this, viewModelFactory).get(PagingMovieViewModel.class);
 
+        pagingHighestMovieViewModel = ViewModelProviders.of(this,viewModelFactory).get(PagingHighestMovieViewModel.class);
+
+        movieViewModel = ViewModelProviders.of(this,viewModelFactory).get(MovieViewModel.class);
+
+        movieViewModel.getListLiveData().observe(this, this::consumeMovieResponse);
+
+        newestMovieViewModel = ViewModelProviders.of(this,viewModelFactory).get(NewestMovieViewModel.class);
+
+        newestMovieViewModel.getListLiveData().observe(this, this::consumeMovieResponse);
+
+        pageListAdapter = new MoviePageListAdapter();
+
         if(Constant.checkInternetConnection(this)) {
-            init();
+            int selectedOption = pref.getSelectedOption();
+            if(selectedOption == SortType.MOST_POPULAR.getValue()){
+                showMostPopularMovies();
+            }else if(selectedOption == SortType.HIGHEST_RATED.getValue()){
+                showHighestMovies();
+            }else if(selectedOption == SortType.NEWEST.getValue()){
+                showNewestMovies();
+            }
+
         }
 
     }
 
+    private void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-    private void init(){
-        MoviePageListAdapter adapter = new MoviePageListAdapter();
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_main_recycler_view);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.movie_guide);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+        }
+    }
 
-        pagingMovieViewModel.getListLiveData().observe(this, adapter::submitList);
+
+
+    private void showMostPopularMovies(){
+
+        pagingMovieViewModel.getListLiveData().observe(this, pageListAdapter::submitList);
+
+        pageListAdapter.notifyDataSetChanged();
+
+        recyclerView.swapAdapter(pageListAdapter,true);
 
         pagingMovieViewModel.getProgressLoadStatus().observe(this, status -> {
-            if (Objects.requireNonNull(status).equals(Status.LOADING)) {
-                Snackbar.make(findViewById(android.R.id.content), "Loading Movies...", Snackbar.LENGTH_SHORT)
-                        .show();
-            }else if(status.equals(Status.INITIAL)){
-                progressDialog.show();
+//                Snackbar.make(findViewById(android.R.id.content), "Loading Movies...", Snackbar.LENGTH_SHORT)
+//                        .show();
+
+            if(Objects.requireNonNull(status).equals(Status.INITIAL)){
+                shimmerFrameLayout.startShimmer();
             } else if (status.equals(Status.SUCCESS)) {
-               progressDialog.dismiss();
+               shimmerFrameLayout.stopShimmer();
+               shimmerFrameLayout.setVisibility(View.GONE);
             }else if(status.equals(Status.ERROR)){
-                progressDialog.dismiss();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showHighestMovies(){
+
+        pagingHighestMovieViewModel.getListLiveData().observe(this, pageListAdapter::submitList);
+
+        pageListAdapter.notifyDataSetChanged();
+
+        recyclerView.swapAdapter(pageListAdapter,true);
+
+        pagingHighestMovieViewModel.getProgressLoadStatus().observe(this, status -> {
+
+            if(Objects.requireNonNull(status).equals(Status.INITIAL)){
+                shimmerFrameLayout.startShimmer();
+            } else if (status.equals(Status.SUCCESS)) {
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+            }else if(status.equals(Status.ERROR)){
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showNewestMovies(){
+        newestMovieViewModel.getNewestMovies();
+    }
+
+    private void showFavourties(){
+        renderSuccessResponse(favouritesInteractor.getFavorites());
     }
 
     private void consumeMovieResponse(ApiResponseMovie apiResponse) {
@@ -74,15 +178,19 @@ public class MainActivity extends AppCompatActivity {
         switch (apiResponse.status) {
 
             case LOADING:
-                progressDialog.show();
+                Snackbar.make(findViewById(android.R.id.content), "Loading Movies...", Snackbar.LENGTH_SHORT)
+                        .show();
                 break;
 
             case SUCCESS:
-                progressDialog.dismiss();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+                renderSuccessResponse(apiResponse.data.getMovieList());
                 break;
 
             case ERROR:
-                progressDialog.dismiss();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
                 break;
 
@@ -91,10 +199,74 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void renderSuccessResponse(List<Movie> movies){
+        MovieAdapter adapter = new MovieAdapter(this,movies);
+        recyclerView.swapAdapter(adapter,true);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
 
-    /*
-     * method to handle success response
-     * */
 
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
 
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                recyclerView.swapAdapter(pageListAdapter,false);
+                return true;
+            }
+        });
+
+        searchViewTextSubscription = RxSearchView.queryTextChanges(searchView)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribe(charSequence -> {
+                    if (charSequence.length() > 0) {
+                        movieViewModel.getSearchMovies(charSequence.toString());
+                    }
+                });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sort:
+                 displaySortOptions();
+                 break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void displaySortOptions(){
+        SortingDialogFragment sortingDialogFragment = SortingDialogFragment.newInstance();
+        sortingDialogFragment.setRadioChecked(this);
+        sortingDialogFragment.show(getSupportFragmentManager(), "Select Quantity");
+    }
+    @Override
+    protected void onDestroy() {
+        RxUtils.unsubscribe(searchViewTextSubscription);
+        super.onDestroy();
+    }
+
+    @Override
+    public void mostPopularSelected() { showMostPopularMovies(); }
+
+    @Override
+    public void highestRatedSelected() {
+        showHighestMovies();
+    }
+
+    @Override
+    public void favouritesSelected() { showFavourties(); }
+
+    @Override
+    public void newestSelected() { showNewestMovies(); }
 }

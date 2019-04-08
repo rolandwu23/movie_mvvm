@@ -1,5 +1,24 @@
 <resources>
+
     <string name="app_name">Movie</string>
     <string name="errorString">Error</string>
     <string name="network_error">Network Error</string>
+
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+
+    <string name="action_filter">Filter</string>
+    <string name="loading_movies">Loading Movies</string>
+    <string name="sort_by">Sort By</string>
+    <string name="movie_guide">Movie</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
+    <string name="summary">Summary</string>
+    <string name="release_date">Release Date: %s</string>
+    <string name="rating">%s/10</string>
+    <string name="favorites">Favorites</string>
+    <string name="newest">Newest</string>
+    <string name="highest_rated">Highest Rated</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="action_search">Search</string>
 </resources>

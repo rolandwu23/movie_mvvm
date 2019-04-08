@@ -5,6 +5,8 @@
     android:layout_height="320dp"
     android:layout_gravity="center"
     android:layout_margin="1dp"
+    android:clickable="true"
+    android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
 
     <ImageView
