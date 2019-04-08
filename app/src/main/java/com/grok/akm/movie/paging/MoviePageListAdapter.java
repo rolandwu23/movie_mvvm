@@ -41,15 +41,15 @@ public class MoviePageListAdapter  extends PagedListAdapter<Movie, MoviePageList
 
     private Context context;
 
-    public MoviePageListAdapter() {
+    public MoviePageListAdapter(Context context) {
         super(Movie.DIFF_CALLBACK);
+        this.context = context;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View rootView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.movie, viewGroup, false);
-        context = viewGroup.getContext();
         return new ViewHolder(rootView);
     }
 

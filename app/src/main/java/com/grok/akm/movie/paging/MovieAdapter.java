@@ -48,7 +48,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MoviePageListAdapter.View
     private class ViewHolder extends MoviePageListAdapter.ViewHolder implements View.OnClickListener{
 
         private ViewHolder(View root){
-            new MoviePageListAdapter().super(root);
+            new MoviePageListAdapter(context).super(root);
         }
 
         @Override

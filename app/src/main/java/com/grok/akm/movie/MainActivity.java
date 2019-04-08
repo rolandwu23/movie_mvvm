@@ -1,8 +1,6 @@
 package com.grok.akm.movie;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,11 +15,7 @@ import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.grok.akm.movie.Retrofit.Status;
-import com.grok.akm.movie.ViewModel.FragmentViewModel;
-import com.grok.akm.movie.ViewModel.MovieViewModel;
-import com.grok.akm.movie.ViewModel.NewestMovieViewModel;
-import com.grok.akm.movie.ViewModel.PagingHighestMovieViewModel;
-import com.grok.akm.movie.ViewModel.PagingMovieViewModel;
+import com.grok.akm.movie.ViewModel.MainViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
 import com.grok.akm.movie.di.SortPreferences;
 import com.grok.akm.movie.favourites.FavouritesInteractor;
@@ -38,7 +32,6 @@ import javax.inject.Inject;
 
 import io.reactivex.disposables.Disposable;
 
-// implements SortingDialogFragment.RadioChecked
 
 public class MainActivity extends AppCompatActivity{
 
@@ -51,15 +44,7 @@ public class MainActivity extends AppCompatActivity{
     @Inject
     FavouritesInteractor favouritesInteractor;
 
-    PagingMovieViewModel pagingMovieViewModel;
-
-    PagingHighestMovieViewModel pagingHighestMovieViewModel;
-
-    MovieViewModel movieViewModel;
-
-    NewestMovieViewModel newestMovieViewModel;
-
-    FragmentViewModel fragmentViewModel;
+    MainViewModel mainViewModel;
 
     ShimmerFrameLayout shimmerFrameLayout;
 
@@ -84,23 +69,15 @@ public class MainActivity extends AppCompatActivity{
         recyclerView = (RecyclerView) findViewById(R.id.activity_main_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
 
-        pagingMovieViewModel = ViewModelProviders.of(this, viewModelFactory).get(PagingMovieViewModel.class);
+        mainViewModel = ViewModelProviders.of(this,viewModelFactory).get(MainViewModel.class);
 
-        pagingHighestMovieViewModel = ViewModelProviders.of(this,viewModelFactory).get(PagingHighestMovieViewModel.class);
+        mainViewModel.getSearchMoviesLiveData().observe(this, this::consumeMovieResponse);
 
-        movieViewModel = ViewModelProviders.of(this,viewModelFactory).get(MovieViewModel.class);
+        mainViewModel.getNewesetMoviesLiveData().observe(this, this::consumeMovieResponse);
 
-        movieViewModel.getListLiveData().observe(this, this::consumeMovieResponse);
+        mainViewModel.getStatusLiveData().observe(this, this::showSortOptions);
 
-        newestMovieViewModel = ViewModelProviders.of(this,viewModelFactory).get(NewestMovieViewModel.class);
-
-        newestMovieViewModel.getListLiveData().observe(this, this::consumeMovieResponse);
-
-        fragmentViewModel = ViewModelProviders.of(this,viewModelFactory).get(FragmentViewModel.class);
-
-        fragmentViewModel.getStatusLiveData().observe(this, this::showSortOptions);
-
-        pageListAdapter = new MoviePageListAdapter();
+        pageListAdapter = new MoviePageListAdapter(this);
 
         if(Constant.checkInternetConnection(this)) {
             int selectedOption = pref.getSelectedOption();
@@ -110,6 +87,8 @@ public class MainActivity extends AppCompatActivity{
                 showHighestMovies();
             }else if(selectedOption == SortType.NEWEST.getValue()){
                 showNewestMovies();
+            }else {
+                showFavourties();
             }
 
         }
@@ -126,19 +105,15 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-
-
     private void showMostPopularMovies(){
 
-        pagingMovieViewModel.getListLiveData().observe(this, pageListAdapter::submitList);
+        mainViewModel.getMostMoviesLiveData().observe(this, pageListAdapter::submitList);
 
         pageListAdapter.notifyDataSetChanged();
 
         recyclerView.swapAdapter(pageListAdapter,true);
 
-        pagingMovieViewModel.getProgressLoadStatus().observe(this, status -> {
-//                Snackbar.make(findViewById(android.R.id.content), "Loading Movies...", Snackbar.LENGTH_SHORT)
-//                        .show();
+        mainViewModel.getMostLoadStatus().observe(this, status -> {
 
             if(Objects.requireNonNull(status).equals(Status.INITIAL)){
                 shimmerFrameLayout.startShimmer();
@@ -155,13 +130,13 @@ public class MainActivity extends AppCompatActivity{
 
     private void showHighestMovies(){
 
-        pagingHighestMovieViewModel.getListLiveData().observe(this, pageListAdapter::submitList);
+        mainViewModel.getHighestMoviesLiveData().observe(this, pageListAdapter::submitList);
 
         pageListAdapter.notifyDataSetChanged();
 
         recyclerView.swapAdapter(pageListAdapter,true);
 
-        pagingHighestMovieViewModel.getProgressLoadStatus().observe(this, status -> {
+        mainViewModel.getHighestLoadStatus().observe(this, status -> {
 
             if(Objects.requireNonNull(status).equals(Status.INITIAL)){
                 shimmerFrameLayout.startShimmer();
@@ -177,7 +152,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void showNewestMovies(){
-        newestMovieViewModel.getNewestMovies();
+        mainViewModel.getNewestMovies();
     }
 
     private void showFavourties(){
@@ -211,8 +186,6 @@ public class MainActivity extends AppCompatActivity{
                 break;
 
             case SUCCESS:
-                shimmerFrameLayout.stopShimmer();
-                shimmerFrameLayout.setVisibility(View.GONE);
                 renderSuccessResponse(apiResponse.data.getMovieList());
                 break;
 
@@ -228,6 +201,8 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void renderSuccessResponse(List<Movie> movies){
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
         MovieAdapter adapter = new MovieAdapter(this,movies);
         recyclerView.swapAdapter(adapter,true);
     }
@@ -255,7 +230,7 @@ public class MainActivity extends AppCompatActivity{
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .subscribe(charSequence -> {
                     if (charSequence.length() > 0) {
-                        movieViewModel.getSearchMovies(charSequence.toString());
+                        mainViewModel.getSearchMovies(charSequence.toString());
                     }
                 });
 
@@ -275,7 +250,6 @@ public class MainActivity extends AppCompatActivity{
 
     private void displaySortOptions(){
         SortingDialogFragment sortingDialogFragment = SortingDialogFragment.newInstance();
-//        sortingDialogFragment.setRadioChecked(this);
         sortingDialogFragment.show(getSupportFragmentManager(), "Select Quantity");
     }
     @Override
@@ -283,20 +257,5 @@ public class MainActivity extends AppCompatActivity{
         RxUtils.unsubscribe(searchViewTextSubscription);
         super.onDestroy();
     }
-
-//    @Override
-//    public void mostPopularSelected() { showMostPopularMovies(); }
-//
-//    @Override
-//    public void highestRatedSelected() {
-//        showHighestMovies();
-//    }
-//
-//    @Override
-//    public void favouritesSelected() { showFavourties(); }
-//
-//    @Override
-//    public void newestSelected() { showNewestMovies(); }
-
 
 }

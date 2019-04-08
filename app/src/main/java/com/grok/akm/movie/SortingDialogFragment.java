@@ -1,10 +1,8 @@
 package com.grok.akm.movie;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,9 +12,8 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.grok.akm.movie.ViewModel.FragmentViewModel;
+import com.grok.akm.movie.ViewModel.MainViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
-import com.grok.akm.movie.di.SortOptionsModule;
 import com.grok.akm.movie.di.SortPreferences;
 
 import javax.inject.Inject;
@@ -31,15 +28,13 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
 
     RadioGroup sortingOptionsGroup;
 
-//    RadioChecked radioChecked;
-
     @Inject
     SortPreferences pref;
 
     @Inject
     ViewModelFactory viewModelFactory;
 
-    FragmentViewModel fragmentViewModel;
+    MainViewModel mainViewModel;
 
     public static SortingDialogFragment newInstance()
     {
@@ -54,7 +49,7 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
         setRetainInstance(true);
         ((MyApplication) getActivity().getApplication()).getAppComponent().doInjection(this);
 
-        fragmentViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(FragmentViewModel.class);
+        mainViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(MainViewModel.class);
     }
 
     @NonNull
@@ -85,28 +80,24 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
         switch (checkedId)
         {
             case R.id.most_popular:
-//                radioChecked.mostPopularSelected();
-                fragmentViewModel.setStatusLiveData(SortType.MOST_POPULAR);
+                mainViewModel.setStatusLiveData(SortType.MOST_POPULAR);
                 pref.setSelectedOption(SortType.MOST_POPULAR);
                 dismiss();
                 break;
 
             case R.id.highest_rated:
-//                radioChecked.highestRatedSelected();
-                fragmentViewModel.setStatusLiveData(SortType.HIGHEST_RATED);
+                mainViewModel.setStatusLiveData(SortType.HIGHEST_RATED);
                 pref.setSelectedOption(SortType.HIGHEST_RATED);
                 dismiss();
                 break;
 
             case R.id.favorites:
-//                radioChecked.favouritesSelected();
-                fragmentViewModel.setStatusLiveData(SortType.FAVORITES);
+                mainViewModel.setStatusLiveData(SortType.FAVORITES);
                 pref.setSelectedOption(SortType.FAVORITES);
                 dismiss();
                 break;
             case R.id.newest:
-//                radioChecked.newestSelected();
-                fragmentViewModel.setStatusLiveData(SortType.NEWEST);
+                mainViewModel.setStatusLiveData(SortType.NEWEST);
                 pref.setSelectedOption(SortType.NEWEST);
                 dismiss();
                 break;
@@ -130,15 +121,4 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
 
         }
     }
-
-//    public void setRadioChecked(RadioChecked radioChecked){
-//        this.radioChecked = radioChecked;
-//    }
-//
-//    public interface RadioChecked{
-//        void mostPopularSelected();
-//        void highestRatedSelected();
-//        void favouritesSelected();
-//        void newestSelected();
-//    }
 }

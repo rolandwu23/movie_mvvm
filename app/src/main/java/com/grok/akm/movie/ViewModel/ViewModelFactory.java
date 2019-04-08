@@ -20,20 +20,10 @@ import javax.inject.Inject;
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            if (modelClass.isAssignableFrom(PagingMovieViewModel.class)) {
-                return (T) new PagingMovieViewModel(repository);
-            }else if(modelClass.isAssignableFrom(MovieViewModel.class)){
-                return (T) new MovieViewModel(repository);
-            }else if(modelClass.isAssignableFrom(PagingHighestMovieViewModel.class)){
-                return (T) new PagingHighestMovieViewModel(repository);
-            }else if(modelClass.isAssignableFrom(TrailersViewModel.class)){
-                return (T) new TrailersViewModel(repository);
-            }else if(modelClass.isAssignableFrom(ReviewsViewModel.class)){
-                return (T) new ReviewsViewModel(repository);
-            }else if(modelClass.isAssignableFrom(NewestMovieViewModel.class)){
-                return (T) new NewestMovieViewModel(repository);
-            }else if(modelClass.isAssignableFrom(FragmentViewModel.class)){
-                return (T) new FragmentViewModel();
+            if(modelClass.isAssignableFrom(MainViewModel.class)){
+                return (T) new MainViewModel(repository);
+            }else if(modelClass.isAssignableFrom(DetailsViewModel.class)){
+                return (T) new DetailsViewModel(repository);
             }
             throw new IllegalArgumentException("Unknown class name");
         }

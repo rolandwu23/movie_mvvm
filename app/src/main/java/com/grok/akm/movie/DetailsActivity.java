@@ -13,7 +13,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +25,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.grok.akm.movie.ViewModel.ReviewsViewModel;
-import com.grok.akm.movie.ViewModel.TrailersViewModel;
+import com.grok.akm.movie.ViewModel.DetailsViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
 import com.grok.akm.movie.favourites.FavouritesInteractor;
 import com.grok.akm.movie.pojo.Movie;
@@ -69,10 +67,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private Movie movie;
 
-    private TrailersViewModel trailersViewModel;
-
-    private ReviewsViewModel reviewsViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,17 +96,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         ViewCompat.setTransitionName(poster,VIEW_NAME_HEADER_IMAGE);
         ViewCompat.setTransitionName(title,VIEW_NAME_HEADER_TITLE);
 
-        trailersViewModel = ViewModelProviders.of(this,viewModelFactory).get(TrailersViewModel.class);
+        DetailsViewModel detailsViewModel = ViewModelProviders.of(this,viewModelFactory).get(DetailsViewModel.class);
 
-        trailersViewModel.getTrailers(movie.getId());
+        detailsViewModel.getTrailers(movie.getId());
 
-        trailersViewModel.getListLiveData().observe(this, this::consumeTrailerResponse);
+        detailsViewModel.getTrailersLiveData().observe(this, this::consumeTrailerResponse);
 
-        reviewsViewModel = ViewModelProviders.of(this,viewModelFactory).get(ReviewsViewModel.class);
+        detailsViewModel.getReviews(movie.getId());
 
-        reviewsViewModel.getReviews(movie.getId());
-
-        reviewsViewModel.getListLiveData().observe(this, this::consumeReviewResponse);
+        detailsViewModel.getReviewsLiveData().observe(this, this::consumeReviewResponse);
 
         setToolbar();
 
