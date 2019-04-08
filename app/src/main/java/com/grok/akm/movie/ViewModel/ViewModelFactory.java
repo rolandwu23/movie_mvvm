@@ -32,6 +32,8 @@ import javax.inject.Inject;
                 return (T) new ReviewsViewModel(repository);
             }else if(modelClass.isAssignableFrom(NewestMovieViewModel.class)){
                 return (T) new NewestMovieViewModel(repository);
+            }else if(modelClass.isAssignableFrom(FragmentViewModel.class)){
+                return (T) new FragmentViewModel();
             }
             throw new IllegalArgumentException("Unknown class name");
         }

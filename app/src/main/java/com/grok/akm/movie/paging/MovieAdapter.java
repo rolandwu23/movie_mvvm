@@ -1,5 +1,6 @@
 package com.grok.akm.movie.paging;
 
+import android.app.Activity;
 import android.content.Context;
 
 import android.content.Intent;
@@ -7,6 +8,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -49,7 +53,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MoviePageListAdapter.View
 
         @Override
         public void onClick(View v) {
-            DetailsPath(movie);
+            DetailsPath(movie,v);
         }
     }
 
@@ -98,12 +102,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MoviePageListAdapter.View
                 .getResources().getColor(R.color.black_translucent_60)));
     }
 
-    private void DetailsPath(Movie movie) {
+    private void DetailsPath(Movie movie,View view) {
         Intent intent = new Intent(context, DetailsActivity.class);
         Bundle extras = new Bundle();
         extras.putParcelable(Constant.MOVIE, movie);
         intent.putExtras(extras);
-        context.startActivity(intent);
+
+        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                (Activity)context,
+
+                // Now we provide a list of Pair items which contain the view we can transitioning
+                // from, and the name of the view it is transitioning to, in the launched activity
+                new Pair<View, String>(view.findViewById(R.id.movie_poster),
+                        DetailsActivity.VIEW_NAME_HEADER_IMAGE),
+                new Pair<View, String>(view.findViewById(R.id.movie_name),
+                        DetailsActivity.VIEW_NAME_HEADER_TITLE));
+
+        // Now we can start the Activity, providing the activity options as a bundle
+        ActivityCompat.startActivity(context, intent, activityOptions.toBundle());
     }
 
 }

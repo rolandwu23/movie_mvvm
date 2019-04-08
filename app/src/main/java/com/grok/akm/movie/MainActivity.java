@@ -1,6 +1,8 @@
 package com.grok.akm.movie;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.grok.akm.movie.Retrofit.Status;
+import com.grok.akm.movie.ViewModel.FragmentViewModel;
 import com.grok.akm.movie.ViewModel.MovieViewModel;
 import com.grok.akm.movie.ViewModel.NewestMovieViewModel;
 import com.grok.akm.movie.ViewModel.PagingHighestMovieViewModel;
@@ -35,7 +38,9 @@ import javax.inject.Inject;
 
 import io.reactivex.disposables.Disposable;
 
-public class MainActivity extends AppCompatActivity implements SortingDialogFragment.RadioChecked{
+// implements SortingDialogFragment.RadioChecked
+
+public class MainActivity extends AppCompatActivity{
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -53,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements SortingDialogFrag
     MovieViewModel movieViewModel;
 
     NewestMovieViewModel newestMovieViewModel;
+
+    FragmentViewModel fragmentViewModel;
 
     ShimmerFrameLayout shimmerFrameLayout;
 
@@ -88,6 +95,10 @@ public class MainActivity extends AppCompatActivity implements SortingDialogFrag
         newestMovieViewModel = ViewModelProviders.of(this,viewModelFactory).get(NewestMovieViewModel.class);
 
         newestMovieViewModel.getListLiveData().observe(this, this::consumeMovieResponse);
+
+        fragmentViewModel = ViewModelProviders.of(this,viewModelFactory).get(FragmentViewModel.class);
+
+        fragmentViewModel.getStatusLiveData().observe(this, this::showSortOptions);
 
         pageListAdapter = new MoviePageListAdapter();
 
@@ -173,6 +184,23 @@ public class MainActivity extends AppCompatActivity implements SortingDialogFrag
         renderSuccessResponse(favouritesInteractor.getFavorites());
     }
 
+    private void showSortOptions(SortType sortType){
+        switch (sortType){
+            case MOST_POPULAR:
+                showMostPopularMovies();
+                break;
+            case HIGHEST_RATED:
+                showHighestMovies();
+                break;
+            case NEWEST:
+                showNewestMovies();
+                break;
+            case FAVORITES:
+                showFavourties();
+                break;
+        }
+    }
+
     private void consumeMovieResponse(ApiResponseMovie apiResponse) {
 
         switch (apiResponse.status) {
@@ -247,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements SortingDialogFrag
 
     private void displaySortOptions(){
         SortingDialogFragment sortingDialogFragment = SortingDialogFragment.newInstance();
-        sortingDialogFragment.setRadioChecked(this);
+//        sortingDialogFragment.setRadioChecked(this);
         sortingDialogFragment.show(getSupportFragmentManager(), "Select Quantity");
     }
     @Override
@@ -256,17 +284,19 @@ public class MainActivity extends AppCompatActivity implements SortingDialogFrag
         super.onDestroy();
     }
 
-    @Override
-    public void mostPopularSelected() { showMostPopularMovies(); }
+//    @Override
+//    public void mostPopularSelected() { showMostPopularMovies(); }
+//
+//    @Override
+//    public void highestRatedSelected() {
+//        showHighestMovies();
+//    }
+//
+//    @Override
+//    public void favouritesSelected() { showFavourties(); }
+//
+//    @Override
+//    public void newestSelected() { showNewestMovies(); }
 
-    @Override
-    public void highestRatedSelected() {
-        showHighestMovies();
-    }
 
-    @Override
-    public void favouritesSelected() { showFavourties(); }
-
-    @Override
-    public void newestSelected() { showNewestMovies(); }
 }
