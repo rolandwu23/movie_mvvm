@@ -25,12 +25,16 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.grok.akm.movie.Model.ApiResponse.ApiResponseReview;
+import com.grok.akm.movie.Model.ApiResponse.ApiResponseTrailer;
+import com.grok.akm.movie.Room.FavoriteViewModel;
+import com.grok.akm.movie.Utils.Constant;
 import com.grok.akm.movie.ViewModel.DetailsViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
-import com.grok.akm.movie.favourites.FavouritesInteractor;
-import com.grok.akm.movie.pojo.Movie;
-import com.grok.akm.movie.pojo.Review;
-import com.grok.akm.movie.pojo.Video;
+import com.grok.akm.movie.di.MyApplication;
+import com.grok.akm.movie.Model.pojo.Movie;
+import com.grok.akm.movie.Model.pojo.Review;
+import com.grok.akm.movie.Model.pojo.Video;
 
 import java.util.List;
 
@@ -51,8 +55,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Inject
     ViewModelFactory viewModelFactory;
 
-    @Inject
-    FavouritesInteractor favouritesInteractor;
+    FavoriteViewModel favoriteViewModel;
 
     @BindView(R.id.movie_poster)
     ImageView poster;
@@ -98,6 +101,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         ViewCompat.setTransitionName(poster,VIEW_NAME_HEADER_IMAGE);
         ViewCompat.setTransitionName(title,VIEW_NAME_HEADER_TITLE);
+
+        favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
 
         DetailsViewModel detailsViewModel = ViewModelProviders.of(this,viewModelFactory).get(DetailsViewModel.class);
 
@@ -255,7 +260,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void showFavourite(){
-        if(favouritesInteractor.isFavorite(movie.getId())){
+        if(favoriteViewModel.isFavorite(movie)){
             favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_white_24dp));
         }else{
             favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_border_white_24dp));
@@ -281,14 +286,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void onFavouriteClick(){
-        boolean favourite = favouritesInteractor.isFavorite(movie.getId());
-                if(favourite){
-                    favouritesInteractor.unFavorite(movie.getId());
-                    favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_border_white_24dp));
-                }else{
-                    favouritesInteractor.setFavorite(movie);
-                    favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_white_24dp));
-                }
+
+        boolean favourite = favoriteViewModel.isFavorite(movie);
+        if(favourite){
+            favoriteViewModel.unFavorite(movie);
+            favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_border_white_24dp));
+        }else{
+            favoriteViewModel.setFavorite(movie);
+            favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_white_24dp));
+        }
     }
 
     @Override

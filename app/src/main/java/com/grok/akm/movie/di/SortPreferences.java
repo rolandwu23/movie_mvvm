@@ -3,7 +3,7 @@ package com.grok.akm.movie.di;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.grok.akm.movie.SortType;
+import com.grok.akm.movie.Utils.SortType;
 
 import javax.inject.Inject;
 

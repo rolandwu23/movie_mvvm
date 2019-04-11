@@ -12,8 +12,11 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.grok.akm.movie.Utils.SortType;
+import com.grok.akm.movie.ViewModel.FragmentViewModel;
 import com.grok.akm.movie.ViewModel.MainViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
+import com.grok.akm.movie.di.MyApplication;
 import com.grok.akm.movie.di.SortPreferences;
 
 import javax.inject.Inject;
@@ -34,7 +37,7 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
     @Inject
     ViewModelFactory viewModelFactory;
 
-    MainViewModel mainViewModel;
+    FragmentViewModel fragmentViewModel;
 
     public static SortingDialogFragment newInstance()
     {
@@ -49,7 +52,7 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
         setRetainInstance(true);
         ((MyApplication) getActivity().getApplication()).getAppComponent().doInjection(this);
 
-        mainViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(MainViewModel.class);
+        fragmentViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(FragmentViewModel.class);
     }
 
     @NonNull
@@ -80,24 +83,24 @@ public class SortingDialogFragment extends DialogFragment implements RadioGroup.
         switch (checkedId)
         {
             case R.id.most_popular:
-                mainViewModel.setStatusLiveData(SortType.MOST_POPULAR);
+                fragmentViewModel.setStatusLiveData(SortType.MOST_POPULAR);
                 pref.setSelectedOption(SortType.MOST_POPULAR);
                 dismiss();
                 break;
 
             case R.id.highest_rated:
-                mainViewModel.setStatusLiveData(SortType.HIGHEST_RATED);
+                fragmentViewModel.setStatusLiveData(SortType.HIGHEST_RATED);
                 pref.setSelectedOption(SortType.HIGHEST_RATED);
                 dismiss();
                 break;
 
             case R.id.favorites:
-                mainViewModel.setStatusLiveData(SortType.FAVORITES);
+                fragmentViewModel.setStatusLiveData(SortType.FAVORITES);
                 pref.setSelectedOption(SortType.FAVORITES);
                 dismiss();
                 break;
             case R.id.newest:
-                mainViewModel.setStatusLiveData(SortType.NEWEST);
+                fragmentViewModel.setStatusLiveData(SortType.NEWEST);
                 pref.setSelectedOption(SortType.NEWEST);
                 dismiss();
                 break;

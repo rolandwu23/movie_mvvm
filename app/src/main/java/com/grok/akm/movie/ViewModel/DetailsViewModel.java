@@ -3,9 +3,8 @@ package com.grok.akm.movie.ViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.grok.akm.movie.ApiResponseReview;
-import com.grok.akm.movie.ApiResponseTrailer;
-import com.grok.akm.movie.ViewModel.Repository;
+import com.grok.akm.movie.Model.ApiResponse.ApiResponseReview;
+import com.grok.akm.movie.Model.ApiResponse.ApiResponseTrailer;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
