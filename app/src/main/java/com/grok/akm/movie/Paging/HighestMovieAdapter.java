@@ -2,7 +2,6 @@ package com.grok.akm.movie.Paging;
 
 import android.app.Activity;
 import android.content.Context;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -23,11 +22,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
-
-import com.grok.akm.movie.Utils.Constant;
 import com.grok.akm.movie.DetailsActivity;
-import com.grok.akm.movie.R;
 import com.grok.akm.movie.Model.pojo.Movie;
+import com.grok.akm.movie.R;
+import com.grok.akm.movie.Utils.Constant;
 
 import java.util.List;
 

@@ -3,9 +3,9 @@ package com.grok.akm.movie.di;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.grok.akm.movie.BuildConfig;
-import com.grok.akm.movie.ViewModel.Repository;
 import com.grok.akm.movie.Network.ApiCallInterface;
 import com.grok.akm.movie.Network.RequestInterceptor;
+import com.grok.akm.movie.ViewModel.Repository;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 

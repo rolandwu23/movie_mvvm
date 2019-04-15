@@ -1,9 +1,8 @@
 package com.grok.akm.movie;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ImageView;
+import android.support.v7.app.AppCompatActivity;
 
 import com.grok.akm.movie.Utils.Constant;
 import com.grok.akm.movie.Utils.SortType;
@@ -11,9 +10,6 @@ import com.grok.akm.movie.di.MyApplication;
 import com.grok.akm.movie.di.SortPreferences;
 
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 

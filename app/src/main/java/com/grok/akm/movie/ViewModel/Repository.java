@@ -1,14 +1,11 @@
 package com.grok.akm.movie.ViewModel;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
-import com.grok.akm.movie.Network.ApiCallInterface;
 import com.grok.akm.movie.Model.pojo.MovieWrapper;
 import com.grok.akm.movie.Model.pojo.ReviewWrapper;
 import com.grok.akm.movie.Model.pojo.VideoWrapper;
-import com.grok.akm.movie.Room.FavoriteDao;
-import com.grok.akm.movie.Room.FavoriteRoomDatabase;
+import com.grok.akm.movie.Network.ApiCallInterface;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

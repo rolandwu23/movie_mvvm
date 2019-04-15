@@ -3,12 +3,10 @@ package com.grok.akm.movie.Paging;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.paging.PageKeyedDataSource;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.grok.akm.movie.ViewModel.Repository;
-import com.grok.akm.movie.Network.Status;
 import com.grok.akm.movie.Model.pojo.Movie;
-
+import com.grok.akm.movie.Network.Status;
+import com.grok.akm.movie.ViewModel.Repository;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

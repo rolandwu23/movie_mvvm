@@ -1,11 +1,13 @@
 package com.grok.akm.movie.di;
 
+
 import com.grok.akm.movie.DetailsActivity;
 import com.grok.akm.movie.FavoritesActivity;
 import com.grok.akm.movie.HighestActivity;
 import com.grok.akm.movie.MainActivity;
 import com.grok.akm.movie.MostActivity;
 import com.grok.akm.movie.NewestActivity;
+import com.grok.akm.movie.SearchActivity;
 import com.grok.akm.movie.SortingDialogFragment;
 
 import javax.inject.Singleton;
@@ -29,5 +31,7 @@ public interface AppComponent {
     void doInjection(NewestActivity newestActivity);
 
     void doInjection(HighestActivity highestActivity);
+
+    void doInjection(SearchActivity searchActivity);
 
 }

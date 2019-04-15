@@ -14,7 +14,6 @@ import android.widget.RadioGroup;
 
 import com.grok.akm.movie.Utils.SortType;
 import com.grok.akm.movie.ViewModel.FragmentViewModel;
-import com.grok.akm.movie.ViewModel.MainViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
 import com.grok.akm.movie.di.MyApplication;
 import com.grok.akm.movie.di.SortPreferences;

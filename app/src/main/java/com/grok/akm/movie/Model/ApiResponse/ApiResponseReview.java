@@ -1,7 +1,7 @@
 package com.grok.akm.movie.Model.ApiResponse;
 
-import com.grok.akm.movie.Network.Status;
 import com.grok.akm.movie.Model.pojo.ReviewWrapper;
+import com.grok.akm.movie.Network.Status;
 
 import io.reactivex.annotations.Nullable;
 

@@ -25,10 +25,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.grok.akm.movie.Utils.Constant;
 import com.grok.akm.movie.DetailsActivity;
-import com.grok.akm.movie.R;
 import com.grok.akm.movie.Model.pojo.Movie;
+import com.grok.akm.movie.R;
+import com.grok.akm.movie.Utils.Constant;
 
 
 public class MoviePageListAdapter  extends PagedListAdapter<Movie, MoviePageListAdapter.ViewHolder> {

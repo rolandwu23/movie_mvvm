@@ -3,7 +3,6 @@ package com.grok.akm.movie.Room;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 
 import com.grok.akm.movie.Model.pojo.Movie;
 
