@@ -30,9 +30,9 @@ import com.grok.akm.movie.Model.ApiResponse.ApiResponseTrailer;
 import com.grok.akm.movie.Model.pojo.Movie;
 import com.grok.akm.movie.Model.pojo.Review;
 import com.grok.akm.movie.Model.pojo.Video;
-import com.grok.akm.movie.Room.FavoriteViewModel;
 import com.grok.akm.movie.Utils.Constant;
 import com.grok.akm.movie.ViewModel.DetailsViewModel;
+import com.grok.akm.movie.ViewModel.FavoriteViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
 import com.grok.akm.movie.di.MyApplication;
 
@@ -260,7 +260,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void showFavourite(){
-        if(favoriteViewModel.isFavorite(movie)){
+        if(favoriteViewModel.isFavorite(movie.getId())){
             favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_white_24dp));
         }else{
             favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_border_white_24dp));
@@ -287,9 +287,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void onFavouriteClick(){
 
-        boolean favourite = favoriteViewModel.isFavorite(movie);
+        boolean favourite = favoriteViewModel.isFavorite(movie.getId());
         if(favourite){
-            favoriteViewModel.unFavorite(movie);
+            favoriteViewModel.unFavorite(movie.getId());
             favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_favorite_border_white_24dp));
         }else{
             favoriteViewModel.setFavorite(movie);

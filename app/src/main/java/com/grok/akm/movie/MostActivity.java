@@ -3,6 +3,7 @@ package com.grok.akm.movie;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MostActivity extends AppCompatActivity{
+public class MostActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -49,6 +50,9 @@ public class MostActivity extends AppCompatActivity{
 
     @BindView(R.id.activity_main_recycler_view)
     RecyclerView recyclerView;
+
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     MoviePageListAdapter pageListAdapter;
 
@@ -77,6 +81,10 @@ public class MostActivity extends AppCompatActivity{
 
         fragmentViewModel.getStatusLiveData().observe(this, this::showSortOptions);
 
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
+
         init();
 
     }
@@ -104,12 +112,15 @@ public class MostActivity extends AppCompatActivity{
         mainViewModel.getMostLoadStatus().observe(this, status -> {
 
             if(Objects.requireNonNull(status).equals(Status.INITIAL)){
+                swipeRefreshLayout.setRefreshing(false);
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
             } else if (status.equals(Status.SUCCESS)) {
+                swipeRefreshLayout.setRefreshing(false);
                shimmerFrameLayout.stopShimmer();
                shimmerFrameLayout.setVisibility(View.GONE);
             }else if(status.equals(Status.ERROR)){
+                swipeRefreshLayout.setRefreshing(false);
                 shimmerFrameLayout.stopShimmer();
                 shimmerFrameLayout.setVisibility(View.GONE);
                 Toast.makeText(MostActivity.this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
@@ -232,11 +243,15 @@ public class MostActivity extends AppCompatActivity{
         SortingDialogFragment sortingDialogFragment = SortingDialogFragment.newInstance();
         sortingDialogFragment.show(getSupportFragmentManager(), "Select Quantity");
     }
+
     @Override
     protected void onDestroy() {
 //        RxUtils.unsubscribe(searchViewTextSubscription);
         super.onDestroy();
     }
 
-
+    @Override
+    public void onRefresh() {
+        mainViewModel.refresh();
+    }
 }

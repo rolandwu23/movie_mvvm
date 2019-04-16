@@ -14,8 +14,8 @@ import android.view.View;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.grok.akm.movie.Model.pojo.Movie;
 import com.grok.akm.movie.Paging.HighestMovieAdapter;
-import com.grok.akm.movie.Room.FavoriteViewModel;
 import com.grok.akm.movie.Utils.SortType;
+import com.grok.akm.movie.ViewModel.FavoriteViewModel;
 import com.grok.akm.movie.ViewModel.FragmentViewModel;
 import com.grok.akm.movie.ViewModel.ViewModelFactory;
 import com.grok.akm.movie.di.MyApplication;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FavoritesActivity extends AppCompatActivity {
+public class FavoritesActivity extends AppCompatActivity{
 
     @Inject
     ViewModelFactory viewModelFactory;

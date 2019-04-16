@@ -51,6 +51,10 @@ public class MainViewModel extends ViewModel {
         return mostMovies;
     }
 
+    public void refresh(){
+        mostDataSourceFactory.getLiveData().getValue().invalidate();
+    }
+
 
     @Override
     protected void onCleared() {

@@ -50,6 +50,10 @@ public class HighestViewModel extends ViewModel {
         return highestMovies;
     }
 
+    public void refresh(){
+        highestDataSourceFactory.getLiveData().getValue().invalidate();
+    }
+
 
     @Override
     protected void onCleared() {

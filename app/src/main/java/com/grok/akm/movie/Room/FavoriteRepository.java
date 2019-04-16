@@ -42,14 +42,14 @@ public class FavoriteRepository {
         }
     }
 
-    public void unFavorite(Movie movie){
-        new unAsyncTask(favoriteDao).execute(movie);
+    public void unFavorite(String id){
+        new unAsyncTask(favoriteDao).execute(id);
     }
 
-    public Boolean isFavorite(Movie movie){
+    public Boolean isFavorite(String id){
         Boolean b = null;
         try {
-            b =  new checkAsyncTask(favoriteDao).execute(movie).get();
+            b =  new checkAsyncTask(favoriteDao).execute(id).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -59,7 +59,7 @@ public class FavoriteRepository {
         return b;
     }
 
-    private static class checkAsyncTask extends AsyncTask<Movie, Void, Boolean> {
+    private static class checkAsyncTask extends AsyncTask<String, Void, Boolean> {
 
         private FavoriteDao mAsyncTaskDao;
 
@@ -68,13 +68,12 @@ public class FavoriteRepository {
         }
 
         @Override
-        protected Boolean doInBackground(final Movie... params) {
-            Boolean b =  mAsyncTaskDao.isFavorite(params[0].getId()).size() != 0;
-            return b;
+        protected Boolean doInBackground(final String... params) {
+            return mAsyncTaskDao.isFavorite(params[0]) > 0;
         }
     }
 
-    private static class unAsyncTask extends AsyncTask<Movie, Void, Void> {
+    private static class unAsyncTask extends AsyncTask<String, Void, Void> {
 
         private FavoriteDao mAsyncTaskDao;
 
@@ -83,8 +82,8 @@ public class FavoriteRepository {
         }
 
         @Override
-        protected Void doInBackground(final Movie... params) {
-             mAsyncTaskDao.unFavorite(params[0].getId());
+        protected Void doInBackground(final String... params) {
+             mAsyncTaskDao.unFavorite(params[0]);
              return null;
         }
     }

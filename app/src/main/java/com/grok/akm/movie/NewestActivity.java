@@ -3,6 +3,7 @@ package com.grok.akm.movie;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +30,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NewestActivity extends AppCompatActivity {
+public class NewestActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -44,6 +45,9 @@ public class NewestActivity extends AppCompatActivity {
 
     @BindView(R.id.activity_main_recycler_view)
     RecyclerView recyclerView;
+
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Override
@@ -68,6 +72,10 @@ public class NewestActivity extends AppCompatActivity {
         fragmentViewModel = ViewModelProviders.of(this,viewModelFactory).get(FragmentViewModel.class);
 
         fragmentViewModel.getStatusLiveData().observe(this, this::showSortOptions);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private void setToolbar() {
@@ -81,6 +89,7 @@ public class NewestActivity extends AppCompatActivity {
     }
 
     private void renderSuccessResponse(List<Movie> movies){
+        swipeRefreshLayout.setRefreshing(false);
         shimmerFrameLayout.stopShimmer();
         shimmerFrameLayout.setVisibility(View.GONE);
         adapter = new HighestMovieAdapter(this,movies);
@@ -92,9 +101,9 @@ public class NewestActivity extends AppCompatActivity {
         switch (apiResponse.status) {
 
             case LOADING:
+                swipeRefreshLayout.setRefreshing(false);
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
-
                 break;
 
             case SUCCESS:
@@ -102,6 +111,7 @@ public class NewestActivity extends AppCompatActivity {
                 break;
 
             case ERROR:
+                swipeRefreshLayout.setRefreshing(false);
                 shimmerFrameLayout.stopShimmer();
                 shimmerFrameLayout.setVisibility(View.GONE);
                 Toast.makeText(this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
@@ -175,4 +185,8 @@ public class NewestActivity extends AppCompatActivity {
         this.finish();
     }
 
+    @Override
+    public void onRefresh() {
+        newestViewModel.getNewestMovies();
+    }
 }

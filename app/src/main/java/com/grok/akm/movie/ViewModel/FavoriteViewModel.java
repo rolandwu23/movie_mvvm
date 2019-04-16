@@ -1,10 +1,11 @@
-package com.grok.akm.movie.Room;
+package com.grok.akm.movie.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.grok.akm.movie.Model.pojo.Movie;
+import com.grok.akm.movie.Room.FavoriteRepository;
 
 import java.util.List;
 
@@ -25,11 +26,11 @@ public class FavoriteViewModel extends AndroidViewModel {
         repository.setFavorite(movie);
     }
 
-    public void unFavorite(Movie movie){
-        repository.unFavorite(movie);
+    public void unFavorite(String id){
+        repository.unFavorite(id);
     }
 
-    public boolean isFavorite(Movie movie){
-        return repository.isFavorite(movie);
+    public boolean isFavorite(String id){
+        return repository.isFavorite(id);
     }
 }

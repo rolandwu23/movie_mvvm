@@ -24,8 +24,8 @@ public interface FavoriteDao {
     @Query("DELETE FROM favorite_table where id == :Id")
     void unFavorite(String Id);
 
-    @Query("SELECT * from favorite_table where id == :Id")
-    List<Movie> isFavorite(String Id);
+    @Query("SELECT count(*) from favorite_table where id == :Id")
+    int isFavorite(String Id);
 
     @Query("DELETE FROM favorite_table")
     void deleteAll();
