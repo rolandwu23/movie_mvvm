@@ -14,9 +14,5 @@ It also demostrates communicatio between activiy and fragment using ViewModel.
 
 And also animated activity transition using ActivityOptionCompat.
 
-
-
-
-
-
-
+Go to tmdb.org and get API key and add it in the local.properties file
+tmdb_api_key=YOUR_API_KEY
